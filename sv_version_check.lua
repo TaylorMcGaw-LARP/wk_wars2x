@@ -66,7 +66,7 @@ PerformHttpRequest('https://raw.githubusercontent.com/Sonoran-Software/wk_wars2x
 						-- If the versions are different, print it out
 						if (json.decode(data).sonoran ~= curVer) then
 							print(
-											'  ||    ^1Your Wraith ARS 2X version is outdated, visit https://github.com/Sonoran-Software/wk_wars2x/tags \n  ^0||    ^1for the latest Sonoran integrated version\n^0  \\\\\n')
+											'  ||    ^1Your Wraith ARS 2X version is outdated, visit https://github.com/Sonoran-Software/wk_wars2x/releases \n  ^0||    ^1for the latest Sonoran integrated version\n^0  \\\\\n')
 						else
 							print('  ||    ^2Wraith ARS 2X is up to date on version ' .. curVer .. '!\n^0  ||\n  \\\\\n')
 						end
