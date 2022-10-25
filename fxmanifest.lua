@@ -38,7 +38,7 @@ game "gta5"
 name "Wraith ARS 2X"
 description "Police radar and plate reader system for FiveM"
 author "WolfKnight"
-version "1.3.0-sonoran"
+version "1.3.1-sonoran"
 
 -- Include the files
 files {
@@ -60,6 +60,7 @@ server_script "sv_version_check.lua"
 server_script "sv_exports.lua"
 server_script "sv_sync.lua"
 server_export "TogglePlateLock"
+server_export "getVersionData"
 
 -- Run the client scripts
 client_script "config.lua"

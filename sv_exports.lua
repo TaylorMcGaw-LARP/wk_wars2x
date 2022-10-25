@@ -2,10 +2,10 @@
 
 	Wraith ARS 2X
 	Created by WolfKnight
-	
-	For discussions, information on future updates, and more, join 
-	my Discord: https://discord.gg/fD4e6WD 
-	
+
+	For discussions, information on future updates, and more, join
+	my Discord: https://discord.gg/fD4e6WD
+
 	MIT License
 
 	Copyright (c) 2020 WolfKnight
@@ -30,10 +30,10 @@
 
 ---------------------------------------------------------------------------------------]]--
 
--- Although there is only one export at the moment, more may be added down the line. 
+-- Although there is only one export at the moment, more may be added down the line.
 
 --[[---------------------------------------------------------------------------------------
-	Locks the designated plate reader camera for the given client. 
+	Locks the designated plate reader camera for the given client.
 
 	Parameters:
 		clientId:
@@ -47,4 +47,8 @@
 ---------------------------------------------------------------------------------------]]--
 function TogglePlateLock( clientId, cam, beepAudio, boloAudio )
 	TriggerClientEvent( "wk:togglePlateLock", clientId, cam, beepAudio, boloAudio )
-end 
+end
+
+function getVersionData()
+	return GetResourceMetadata(GetCurrentResourceName(), 'version')
+end
