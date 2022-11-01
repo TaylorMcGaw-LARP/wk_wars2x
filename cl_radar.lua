@@ -311,6 +311,8 @@ function RADAR:SetPowerState( state, instantOverride )
 
 	-- Only power up if the system is not already powering up
 	if ( not self:IsPoweringUp() and currentState ~= state ) then
+		-- Triggers an event to integration with the state true = on | false = off
+		TriggerEvent('wk:integration:powerToggle', state)
 		-- Toggle the power variable
 		self.vars.power = state
 
@@ -326,7 +328,6 @@ function RADAR:SetPowerState( state, instantOverride )
 			if ( not instantOverride ) then
 				-- Tell the system the radar is 'powering up'
 				self:SetPoweringUpState( true )
-
 				-- Set a 2 second countdown
 				Citizen.SetTimeout( 2000, function()
 					-- Tell the system the radar has 'powered up'
@@ -1779,6 +1780,8 @@ function RADAR:Main()
 		-- Added by Sonoran Software Systems --
 		-- Adds needed compatibility for ------
 		------- Sonoran Radar script ----------
+		-- print('data', json.encode(data.antennas))
+
 		TriggerEvent('wk:integration:update', data.antennas, RADAR:IsFastDisplayEnabled())
 	end
 end
