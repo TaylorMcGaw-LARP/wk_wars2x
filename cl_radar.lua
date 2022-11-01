@@ -1710,8 +1710,17 @@ function RADAR:Main()
 				-- see if it is a particular type (e.g. if i % 2 == 0 then it's the 'fastest' vehicle)
 				for i = 1, 2 do
 					-- Create the table to store the speed and direction for this vehicle data
-					data.antennas[ant][i] = { speed = "¦¦¦", dir = 0 }
-
+					--[[
+						EDITS BY SONORAN SOFTWARE:
+						Added "lock" to data.antennas array
+						Added "mode" to data.antennas array
+						"mode" will transmit the current mode (opp or same) of the respected antenna | (STRING) = 'opp' or 'same'
+						"lock" will transmit the "locked" status of the respected antenna (BOOLEAN)
+						true: antenna is currently locked
+						false: antenna is not currently locked
+						Example: data.antennas['front'][1].lock
+					]]
+					data.antennas[ant][i] = { speed = "¦¦¦", dir = 0, lock = self:IsAntennaSpeedLocked( ant ), mode = self:GetAntennaMode( ant )}
 					-- If the current iteration is the number 2 ('fastest') and there's a speed locked, grab the locked speed
 					-- and direction
 					if ( i == 2 and self:IsAntennaSpeedLocked( ant ) ) then
@@ -1733,14 +1742,12 @@ function RADAR:Main()
 							local ownH = UTIL:Round( GetEntityHeading( PLY.veh ), 0 )
 							local tarH = UTIL:Round( GetEntityHeading( av[ant][i].veh ), 0 )
 							data.antennas[ant][i].dir = UTIL:GetEntityRelativeDirection( ownH, tarH )
-
 							-- Set the internal antenna data as this actual dataset is valid
 							if ( i % 2 == 0 ) then
 								self:SetAntennaFastData( ant, data.antennas[ant][i].speed, data.antennas[ant][i].dir )
 							else
 								self:SetAntennaData( ant, data.antennas[ant][i].speed, data.antennas[ant][i].dir )
 							end
-
 							-- Lock the speed automatically if the fast limit system is allowed
 							if ( self:IsFastLimitAllowed() ) then
 								-- Make sure the speed is larger than the limit, and that there isn't already a locked speed
@@ -1772,7 +1779,7 @@ function RADAR:Main()
 		-- Added by Sonoran Software Systems --
 		-- Adds needed compatibility for ------
 		------- Sonoran Radar script ----------
-		TriggerEvent('Sonoran::UpdateAnt', data.antennas)
+		TriggerEvent('wk:integration:update', data.antennas, RADAR:IsFastDisplayEnabled())
 	end
 end
 
