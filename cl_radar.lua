@@ -38,7 +38,7 @@ local type = type
 local tostring = tostring
 local math = math
 local pairs = pairs
-
+local jammedList = {}
 
 --[[----------------------------------------------------------------------------------
 	UI loading and key binds registering
@@ -319,6 +319,9 @@ function RADAR:SetPowerState( state, instantOverride )
 		-- Send the NUI message to toggle the power
 		SendNUIMessage( { _type = "radarPower", state = state, override = instantOverride, fast = self:IsFastDisplayEnabled() } )
 
+		-- Send the power state to the server
+		TriggerServerEvent('wk_wars2x:ActiveRadarsTable', GetPlayerServerId(PlayerId()), state)
+
 		-- Power is now turned on
 		if ( self:IsPowerOn() ) then
 			-- Also make sure the operator menu is inactive
@@ -353,6 +356,11 @@ function RADAR:ToggleDisplayState()
 	-- Send the toggle message to the NUI side
 	SendNUIMessage( { _type = "setRadarDisplayState", state = self:GetDisplayState() } )
 end
+
+-- Send the list of jammed plates to the client
+RegisterNetEvent( "wk_wars2x:SendJammedListToClient", function (listFromServer)
+	jammedList = listFromServer
+end)
 
 -- Gets the display state
 function RADAR:GetDisplayState()
@@ -400,7 +408,12 @@ function RADAR:SetThreadWaitTime( time ) self.vars.threadWaitTime = time end
 
 -- Returns/sets the radr's display hidden state
 function RADAR:GetDisplayHidden() return self.vars.hidden end
-function RADAR:SetDisplayHidden( state ) self.vars.hidden = state end
+function RADAR:SetDisplayHidden( state ) self.vars.hidden = state
+	-- Returns/sets the radar's active state
+	if RADAR:IsPowerOn() then
+		TriggerServerEvent('wk_wars2x:ActiveRadarsTableHidden', GetPlayerServerId(PlayerId()), state)
+	end
+end
 
 -- Opens the remote only if the pause menu is not open and the player's vehicle state is valid, as the
 -- passenger can also open the remote, we check the config variable as well.
@@ -1738,7 +1751,13 @@ function RADAR:Main()
 							local vehSpeed = GetEntitySpeed( av[ant][i].veh )
 							local convertedSpeed = self:GetVehSpeedConverted( vehSpeed )
 							data.antennas[ant][i].speed = UTIL:FormatSpeed( convertedSpeed )
-
+							if next(jammedList) ~= nil then -- check if jammed plate table is empty
+								for k, v in pairs(jammedList) do -- loop through plates
+									if k == GetVehicleNumberPlateText(av[ant][i].veh) then -- check if plate is in the jammed list
+										data.antennas[ant][i].speed = 000  -- if it is then set to 0
+									end
+								end
+							end
 							-- Work out if the vehicle is closing or away
 							local ownH = UTIL:Round( GetEntityHeading( PLY.veh ), 0 )
 							local tarH = UTIL:Round( GetEntityHeading( av[ant][i].veh ), 0 )
