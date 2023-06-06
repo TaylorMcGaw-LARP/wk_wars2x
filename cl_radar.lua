@@ -1769,7 +1769,7 @@ function RADAR:Main()
 								self:SetAntennaData( ant, data.antennas[ant][i].speed, data.antennas[ant][i].dir )
 							end
 							-- Lock the speed automatically if the fast limit system is allowed
-							if ( self:IsFastLimitAllowed() ) then
+							if ( self:IsFastLimitAllowed() ) and not jammedList[GetVehicleNumberPlateText(av[ant][i].veh)] then
 								-- Make sure the speed is larger than the limit, and that there isn't already a locked speed
 								if ( self:IsFastLockEnabled() and convertedSpeed > self:GetFastLimit() and not self:IsAntennaSpeedLocked( ant ) ) then
 									if ( ( self:OnlyLockFastPlayers() and UTIL:IsPlayerInVeh( av[ant][i].veh ) ) or not self:OnlyLockFastPlayers() ) then
