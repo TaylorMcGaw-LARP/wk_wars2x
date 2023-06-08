@@ -88,3 +88,10 @@ RegisterNetEvent('wk_wars2x:SendJammedPlate', function(plate)
 	end
 	TriggerClientEvent('wk_wars2x:SendJammedListToClient', -1, JammedPlates)
 end)
+
+Citizen.CreateThread(function()
+	while #JammedPlates > 0 do
+		Citizen.Wait(5000)
+		TriggerClientEvent('wk_wars2x:SendJammedListToClient', -1, JammedPlates)
+	end
+end)
