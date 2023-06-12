@@ -55,19 +55,15 @@ ActiveRadars = {}
 
 RegisterNetEvent('wk_wars2x:ActiveRadarsTable', function(id, state)
 	if state then
-		ActiveRadars[id] = 'show'
+		table.insert(ActiveRadars, id)
 	else
-		ActiveRadars[id] = nil
+		for i = #ActiveRadars, 1, -1 do
+			if ActiveRadars[i] == id then
+				table.remove(ActiveRadars, i)
+			end
+		end
 	end
 end)
-
--- RegisterNetEvent('wk_wars2x:ActiveRadarsTableHidden', function(id, state)
--- 	if state then
--- 		ActiveRadars[id] = nil
--- 	else
--- 		ActiveRadars[id] = 'show'
--- 	end
--- end)
 
 RegisterNetEvent('wk_wars2x:GetActiveRadarsTable', function()
 	local src = source
