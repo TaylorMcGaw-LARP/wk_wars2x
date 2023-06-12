@@ -67,7 +67,7 @@ end)
 
 RegisterNetEvent('wk_wars2x:GetActiveRadarsTable', function()
 	local src = source
-	if next(ActiveRadars) == nil then
+	if #ActiveRadars == 0 then
 		TriggerClientEvent('wk_wars2x:ReturnActiveRadarTable', src, false)
 	else
 		TriggerClientEvent('wk_wars2x:ReturnActiveRadarTable', src, ActiveRadars)
