@@ -319,9 +319,6 @@ function RADAR:SetPowerState( state, instantOverride )
 		-- Send the NUI message to toggle the power
 		SendNUIMessage( { _type = "radarPower", state = state, override = instantOverride, fast = self:IsFastDisplayEnabled() } )
 
-		-- Send the power state to the server
-		TriggerServerEvent('wk_wars2x:ActiveRadarsTable', GetPlayerServerId(PlayerId()), state)
-
 		-- Power is now turned on
 		if ( self:IsPowerOn() ) then
 			-- Also make sure the operator menu is inactive
@@ -410,9 +407,6 @@ function RADAR:SetThreadWaitTime( time ) self.vars.threadWaitTime = time end
 function RADAR:GetDisplayHidden() return self.vars.hidden end
 function RADAR:SetDisplayHidden( state ) self.vars.hidden = state
 	-- Returns/sets the radar's active state
-	if RADAR:IsPowerOn() then
-		TriggerServerEvent('wk_wars2x:ActiveRadarsTableHidden', GetPlayerServerId(PlayerId()), state)
-	end
 end
 
 -- Opens the remote only if the pause menu is not open and the player's vehicle state is valid, as the
@@ -982,6 +976,11 @@ function RADAR:ToggleAntenna( ant )
 	if ( self:IsPowerOn() ) then
 		-- Toggle the given antennas state
 		self.vars.antennas[ant].xmit = not self.vars.antennas[ant].xmit
+		if self.vars.antennas['front'].xmit or self.vars.antennas['rear'].xmit then
+			TriggerServerEvent('wk_wars2x:ActiveRadarsTable', GetPlayerServerId(PlayerId()), true)
+		else
+			TriggerServerEvent('wk_wars2x:ActiveRadarsTable', GetPlayerServerId(PlayerId()), false)
+		end
 
 		-- Update the interface with the new antenna transmit state
 		SendNUIMessage( { _type = "antennaXmit", ant = ant, on = self:IsAntennaTransmitting( ant ) } )

@@ -61,13 +61,13 @@ RegisterNetEvent('wk_wars2x:ActiveRadarsTable', function(id, state)
 	end
 end)
 
-RegisterNetEvent('wk_wars2x:ActiveRadarsTableHidden', function(id, state)
-	if state then
-		ActiveRadars[id] = nil
-	else
-		ActiveRadars[id] = 'show'
-	end
-end)
+-- RegisterNetEvent('wk_wars2x:ActiveRadarsTableHidden', function(id, state)
+-- 	if state then
+-- 		ActiveRadars[id] = nil
+-- 	else
+-- 		ActiveRadars[id] = 'show'
+-- 	end
+-- end)
 
 RegisterNetEvent('wk_wars2x:GetActiveRadarsTable', function()
 	local src = source
