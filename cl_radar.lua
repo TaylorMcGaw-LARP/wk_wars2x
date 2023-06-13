@@ -38,7 +38,7 @@ local type = type
 local tostring = tostring
 local math = math
 local pairs = pairs
-
+local jammedList = {}
 
 --[[----------------------------------------------------------------------------------
 	UI loading and key binds registering
@@ -354,6 +354,11 @@ function RADAR:ToggleDisplayState()
 	SendNUIMessage( { _type = "setRadarDisplayState", state = self:GetDisplayState() } )
 end
 
+-- Send the list of jammed plates to the client
+RegisterNetEvent( "wk_wars2x:SendJammedListToClient", function (listFromServer)
+	jammedList = listFromServer
+end)
+
 -- Gets the display state
 function RADAR:GetDisplayState()
 	return self.vars.displayed
@@ -400,7 +405,9 @@ function RADAR:SetThreadWaitTime( time ) self.vars.threadWaitTime = time end
 
 -- Returns/sets the radr's display hidden state
 function RADAR:GetDisplayHidden() return self.vars.hidden end
-function RADAR:SetDisplayHidden( state ) self.vars.hidden = state end
+function RADAR:SetDisplayHidden( state ) self.vars.hidden = state
+	-- Returns/sets the radar's active state
+end
 
 -- Opens the remote only if the pause menu is not open and the player's vehicle state is valid, as the
 -- passenger can also open the remote, we check the config variable as well.
@@ -969,6 +976,11 @@ function RADAR:ToggleAntenna( ant )
 	if ( self:IsPowerOn() ) then
 		-- Toggle the given antennas state
 		self.vars.antennas[ant].xmit = not self.vars.antennas[ant].xmit
+		if self.vars.antennas['front'].xmit or self.vars.antennas['rear'].xmit then
+			TriggerServerEvent('wk_wars2x:ActiveRadarsTable', GetPlayerServerId(PlayerId()), true)
+		else
+			TriggerServerEvent('wk_wars2x:ActiveRadarsTable', GetPlayerServerId(PlayerId()), false)
+		end
 
 		-- Update the interface with the new antenna transmit state
 		SendNUIMessage( { _type = "antennaXmit", ant = ant, on = self:IsAntennaTransmitting( ant ) } )
@@ -1738,7 +1750,13 @@ function RADAR:Main()
 							local vehSpeed = GetEntitySpeed( av[ant][i].veh )
 							local convertedSpeed = self:GetVehSpeedConverted( vehSpeed )
 							data.antennas[ant][i].speed = UTIL:FormatSpeed( convertedSpeed )
-
+							if next(jammedList) ~= nil then -- check if jammed plate table is empty
+								for k, v in pairs(jammedList) do -- loop through plates
+									if k == GetVehicleNumberPlateText(av[ant][i].veh) then -- check if plate is in the jammed list
+										data.antennas[ant][i].speed = 000  -- if it is then set to 0
+									end
+								end
+							end
 							-- Work out if the vehicle is closing or away
 							local ownH = UTIL:Round( GetEntityHeading( PLY.veh ), 0 )
 							local tarH = UTIL:Round( GetEntityHeading( av[ant][i].veh ), 0 )
@@ -1750,7 +1768,7 @@ function RADAR:Main()
 								self:SetAntennaData( ant, data.antennas[ant][i].speed, data.antennas[ant][i].dir )
 							end
 							-- Lock the speed automatically if the fast limit system is allowed
-							if ( self:IsFastLimitAllowed() ) then
+							if ( self:IsFastLimitAllowed() ) and not jammedList[GetVehicleNumberPlateText(av[ant][i].veh)] then
 								-- Make sure the speed is larger than the limit, and that there isn't already a locked speed
 								if ( self:IsFastLockEnabled() and convertedSpeed > self:GetFastLimit() and not self:IsAntennaSpeedLocked( ant ) ) then
 									if ( ( self:OnlyLockFastPlayers() and UTIL:IsPlayerInVeh( av[ant][i].veh ) ) or not self:OnlyLockFastPlayers() ) then

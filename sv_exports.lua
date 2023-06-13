@@ -28,10 +28,8 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 
----------------------------------------------------------------------------------------]]--
-
+---------------------------------------------------------------------------------------]] --
 -- Although there is only one export at the moment, more may be added down the line.
-
 --[[---------------------------------------------------------------------------------------
 	Locks the designated plate reader camera for the given client.
 
@@ -44,11 +42,52 @@
 			Play an audible beep, either true or false
 		boloAudio:
 			Play the bolo lock sound, either true or false
----------------------------------------------------------------------------------------]]--
-function TogglePlateLock( clientId, cam, beepAudio, boloAudio )
-	TriggerClientEvent( "wk:togglePlateLock", clientId, cam, beepAudio, boloAudio )
+---------------------------------------------------------------------------------------]] --
+function TogglePlateLock(clientId, cam, beepAudio, boloAudio)
+	TriggerClientEvent('wk:togglePlateLock', clientId, cam, beepAudio, boloAudio)
 end
 
 function getVersionData()
 	return GetResourceMetadata(GetCurrentResourceName(), 'version')
 end
+
+ActiveRadars = {}
+
+RegisterNetEvent('wk_wars2x:ActiveRadarsTable', function(id, state)
+	if state then
+		table.insert(ActiveRadars, id)
+	else
+		for i = #ActiveRadars, 1, -1 do
+			if ActiveRadars[i] == id then
+				table.remove(ActiveRadars, i)
+			end
+		end
+	end
+end)
+
+RegisterNetEvent('wk_wars2x:GetActiveRadarsTable', function()
+	local src = source
+	if #ActiveRadars == 0 then
+		TriggerClientEvent('wk_wars2x:ReturnActiveRadarTable', src, {})
+	else
+		TriggerClientEvent('wk_wars2x:ReturnActiveRadarTable', src, ActiveRadars)
+	end
+end)
+
+JammedPlates = {}
+
+RegisterNetEvent('wk_wars2x:SendJammedPlate', function(plate)
+	if JammedPlates[plate] then
+		JammedPlates[plate] = nil
+	else
+		JammedPlates[plate] = true
+	end
+	TriggerClientEvent('wk_wars2x:SendJammedListToClient', -1, JammedPlates)
+end)
+
+Citizen.CreateThread(function()
+	while #JammedPlates > 0 do
+		Citizen.Wait(5000)
+		TriggerClientEvent('wk_wars2x:SendJammedListToClient', -1, JammedPlates)
+	end
+end)
