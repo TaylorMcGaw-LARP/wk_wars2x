@@ -1724,7 +1724,7 @@ function RADAR:Main()
 				for i = 1, 2 do
 					-- Create the table to store the speed and direction for this vehicle data
 					--[[
-						EDITS BY SONORAN SOFTWARE:
+						EDITS BY snaily SOFTWARE:
 						Added "lock" to data.antennas array
 						Added "mode" to data.antennas array
 						"mode" will transmit the current mode (opp or same) of the respected antenna | (STRING) = 'opp' or 'same'
@@ -1795,9 +1795,9 @@ function RADAR:Main()
 		-- Send the update to the NUI side
 		SendNUIMessage( { _type = "update", speed = data.patrolSpeed, antennas = data.antennas } )
 		---------------------------------------
-		-- Added by Sonoran Software Systems --
+		-- Added by snaily Software Systems --
 		-- Adds needed compatibility for ------
-		------- Sonoran Radar script ----------
+		------- snaily Radar script ----------
 		-- print('data', json.encode(data.antennas))
 
 		TriggerEvent('wk:integration:update', data.antennas, RADAR:IsFastDisplayEnabled())
